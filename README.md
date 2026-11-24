@@ -23,17 +23,26 @@ This workflow builds libvips and Sharp from source with a baseline x86-64 target
 | Build environment | Ubuntu 24.04 |
 | Target | Linux x86-64 baseline |
 
+## Download a release
+
+The recommended download is the permanent GitHub Release:
+
+- **Latest release:** [Scrypted Sharp Legacy v1.0.0](https://github.com/vitva/scrypted-sharp-legacy/releases/tag/v1.0.0)
+- **Archive:** `sharp-legacy-x86_64.tar.gz`
+
+Tagged builds (`v*`) are published automatically as GitHub Releases. The release archive remains available independently of the temporary Actions artifacts.
+
 ## Build artifact
 
-The GitHub Actions workflow builds an artifact named **`sharp-legacy-x86_64`**.
+The GitHub Actions workflow also uploads an artifact named **`sharp-legacy-x86_64`**.
 
-To obtain it:
+To obtain this temporary build artifact:
 
 1. Open the **Actions** tab in this repository.
-2. Select the latest successful **Build legacy x86-64 Sharp** run.
+2. Select the relevant successful **Build legacy x86-64 Sharp** run.
 3. Download the `sharp-legacy-x86_64` artifact.
 
-Artifacts are temporary and currently retained for 14 days. They are not permanent release downloads.
+Actions artifacts are temporary and currently retained for 14 days; use the GitHub Release for a permanent download.
 
 ## Compatibility and testing
 
