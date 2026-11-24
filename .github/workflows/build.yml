@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
       VIPS_VERSION: 8.17.3
@@ -25,8 +25,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config meson ninja-build \
             libglib2.0-dev libexpat1-dev libjpeg-turbo8-dev libpng-dev \
-            libwebp-dev libtiff-dev libarchive-dev liborc-0.4-dev \
-            curl git python3
+            libwebp-dev libtiff-dev curl git python3
 
       - name: Build libvips for baseline x86-64
         run: |
@@ -36,7 +35,8 @@ jobs:
           meson setup build --prefix=/opt/legacy-vips --libdir=lib \
             -Dintrospection=disabled -Dmodules=enabled \
             -Dmagick=disabled -Dheif=disabled -Djpeg-xl=disabled \
-            -Dhighway=disabled -Dorc=disabled
+            -Dhighway=disabled -Dorc=disabled \
+            -Dexif=disabled -Dopenexr=disabled -Darchive=disabled
           meson compile -C build
           sudo meson install -C build
           echo "/opt/legacy-vips/lib" | sudo tee /etc/ld.so.conf.d/legacy-vips.conf
@@ -56,6 +56,14 @@ jobs:
           npm install "sharp@${SHARP_VERSION}"
           npm explore sharp -- npm run build
           node -e "const sharp=require('sharp'); console.log(sharp.versions); sharp({create:{width:8,height:8,channels:3,background:'#336699'}}).jpeg().toBuffer().then(b=>console.log('JPEG smoke test OK:',b.length,'bytes'))"
+
+      - name: Verify runtime shared-library dependencies
+        run: |
+          set -o pipefail
+          ldd /opt/legacy-vips/lib/libvips.so.42 | tee libvips-ldd.txt
+          ! grep -q "not found" libvips-ldd.txt
+          ldd sharp-test/node_modules/sharp/src/build/Release/sharp-linux-x64.node | tee sharp-ldd.txt
+          ! grep -q "not found" sharp-ldd.txt
 
       - name: Package build artifacts
         run: |
