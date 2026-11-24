@@ -4,9 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+    tags: ['v*']
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -79,3 +80,18 @@ jobs:
           path: sharp-legacy-x86_64.tar.gz
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Scrypted Sharp Legacy ${{ github.ref_name }}
+          body: |
+            Baseline x86-64 build of Sharp ${{ env.SHARP_VERSION }} with libvips ${{ env.VIPS_VERSION }}.
+
+            Built for older x86-64 CPUs without AVX support. Tested on AMD G-T56N (Bobcat).
+
+            This is an unofficial compatibility build, not an official Sharp, libvips, or Scrypted release.
+          files: sharp-legacy-x86_64.tar.gz
+          fail_on_unmatched_files: true
+          make_latest: true
