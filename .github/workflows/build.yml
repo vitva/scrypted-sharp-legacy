@@ -36,7 +36,7 @@ jobs:
           echo "/opt/legacy-vips/lib" | sudo tee /etc/ld.so.conf.d/legacy-vips.conf
           sudo ldconfig
           /opt/legacy-vips/bin/vips --version
-          pkg-config --modversion vips-cpp
+          PKG_CONFIG_PATH=/opt/legacy-vips/lib/pkgconfig pkg-config --modversion vips-cpp
 
       - name: Build Sharp from source against custom libvips
         env:
