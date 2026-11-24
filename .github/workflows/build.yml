@@ -23,14 +23,20 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config meson ninja-build             libglib2.0-dev libexpat1-dev libjpeg-turbo8-dev libpng-dev             libwebp-dev libtiff-dev libarchive-dev liborc-0.4-dev             curl git python3
+          sudo apt-get install -y build-essential pkg-config meson ninja-build \
+            libglib2.0-dev libexpat1-dev libjpeg-turbo8-dev libpng-dev \
+            libwebp-dev libtiff-dev libarchive-dev liborc-0.4-dev \
+            curl git python3
 
       - name: Build libvips for baseline x86-64
         run: |
           curl -fsSL "https://github.com/libvips/libvips/releases/download/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.xz" -o vips.tar.xz
           tar -xf vips.tar.xz
           cd "vips-${VIPS_VERSION}"
-          meson setup build --prefix=/opt/legacy-vips --libdir=lib             -Dintrospection=disabled -Dmodules=enabled             -Dmagick=disabled -Dheif=disabled -Djpeg-xl=disabled             -Dhighway=disabled -Dorc=disabled
+          meson setup build --prefix=/opt/legacy-vips --libdir=lib \
+            -Dintrospection=disabled -Dmodules=enabled \
+            -Dmagick=disabled -Dheif=disabled -Djpeg-xl=disabled \
+            -Dhighway=disabled -Dorc=disabled
           meson compile -C build
           sudo meson install -C build
           echo "/opt/legacy-vips/lib" | sudo tee /etc/ld.so.conf.d/legacy-vips.conf
@@ -46,6 +52,7 @@ jobs:
           mkdir sharp-test
           cd sharp-test
           npm init -y
+          npm install --save node-addon-api node-gyp
           npm install "sharp@${SHARP_VERSION}"
           npm explore sharp -- npm run build
           node -e "const sharp=require('sharp'); console.log(sharp.versions); sharp({create:{width:8,height:8,channels:3,background:'#336699'}}).jpeg().toBuffer().then(b=>console.log('JPEG smoke test OK:',b.length,'bytes'))"
